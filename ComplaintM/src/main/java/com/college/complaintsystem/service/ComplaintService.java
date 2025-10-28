@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.college.complaintsystem.model.Complaint;
 import com.college.complaintsystem.repository.ComplaintRepository;
+import java.time.LocalDateTime;
 
 @Service
 public class ComplaintService {
@@ -41,5 +42,11 @@ public class ComplaintService {
 
     public void deleteComplaint(Long id) {
         complaintRepository.deleteById(id);
+    }
+    
+ // ✅ New method — get frequent complaints of the last week
+    public List<Object[]> getFrequentComplaintsLastWeek() {
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+        return complaintRepository.findFrequentComplaintsLastWeek(oneWeekAgo);
     }
 }

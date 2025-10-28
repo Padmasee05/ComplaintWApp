@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+  <!-- include header fragment -->
+  <div th:replace="fragments/header :: header"></div>
+
+  <div class="main-container">
+    <!-- include sidebar fragment -->
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <!-- content area -->
+    <main class="content">
+      <div class="top-stats">
+        <div class="stat-card blue">
+          <div class="stat-title">Total Complaints</div>
+          <div class="stat-value" th:text="${totalComplaints}">0</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-title">Urgent Complaints</div>
+          <div class="stat-value" th:text="${urgentComplaints}">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-title">Resolved Complaints</div>
+          <div class="stat-value" th:text="${resolvedComplaints}">0</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Register by Category (user can quickly choose a category to file complaint) -->
+        <section class="card quick-register">
+          <h3>Register by Category</h3>
+          <div class="category-buttons">
+            <a th:href="@{/complaint/register?category=Hostel}" class="cat-btn">Hostel</a>
+            <a th:href="@{/complaint/register?category=IT}" class="cat-btn">IT</a>
+            <a th:href="@{/complaint/register?category=Mess}" class="cat-btn">Mess</a>
+            <a th:href="@{/complaint/register?category=Academics}" class="cat-btn">Academics</a>
+          </div>
+        </section>
+
+        <!-- My Complaints table -->
+        <section class="card my-complaints">
+          <h3>My Complaints</h3>
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Title</th><th>Category</th><th>Status</th><th>Updated</th></tr>
+            </thead>
+            <tbody>
+              <tr th:each="c : ${myComplaints}">
+                <td th:text="${c.id}">#C001</td>
+                <td th:text="${c.title}">Title</td>
+                <td th:text="${c.category}">Hostel</td>
+                <td th:text="${c.status}">Pending</td>
+                <td th:text="${#dates.format(c.updatedAt != null ? c.updatedAt : c.createdAt, 'dd MMM yyyy HH:mm')}">3d ago</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(myComplaints)}">
+                <td colspan="5">No complaints yet</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Recent activity -->
+        <section class="card recent-activity">
+          <h3>Recent Activity</h3>
+          <ul>
+            <li th:each="note : ${recentActivity}" th:text="${note}">Complaint #... updated</li>
+            <li th:if="${#lists.isEmpty(recentActivity)}">No recent activity</li>
+          </ul>
+        </section>
+
+        <!-- Frequent complaints -->
+        <section class="card frequent-complaints">
+          <h3>Frequent Complaints (This Week)</h3>
+          <ul>
+            <li th:each="f : ${frequentComplaints}">
+              <span th:text="${f[0]}">Category</span> — <strong th:text="${f[1]}">count</strong>
+            </li>
+            <li th:if="${#lists.isEmpty(frequentComplaints)}">No frequent complaints this week</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>

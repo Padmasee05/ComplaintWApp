@@ -3,6 +3,10 @@ package com.college.complaintsystem.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.college.complaintsystem.model.Complaint;
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import java.time.LocalDateTime;
+import org.springframework.data.repository.query.Param;
+
 
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
     
@@ -14,4 +18,12 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
     // Find complaints by status (e.g., "Pending", "Resolved")
     List<Complaint> findByStatus(String status);
+    
+ // ✅ Find most frequent complaints from the last 7 days
+    @Query("SELECT c.category, COUNT(c) as count " +
+    	       "FROM Complaint c " +
+    	       "WHERE c.createdAt >= :oneWeekAgo " +
+    	       "GROUP BY c.category " +
+    	       "ORDER BY COUNT(c) DESC")
+    	List<Object[]> findFrequentComplaintsLastWeek(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
 }

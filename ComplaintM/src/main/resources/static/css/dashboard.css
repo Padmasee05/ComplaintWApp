@@ -1,0 +1,64 @@
+/* dashboard.css - basic light theme layout */
+
+* { box-sizing: border-box; font-family: "Poppins", Arial, sans-serif; }
+body { margin: 0; background: #f4f6f8; color: #223; }
+
+/* Header */
+.header {
+  height: 60px; display:flex; align-items:center; justify-content:space-between;
+  padding: 0 20px; background:#ffffff; border-bottom: 1px solid #e6e9ee;
+  position: fixed; top:0; left:0; right:0; z-index:10;
+}
+.app-name { color:#1f3b57; font-weight:700; }
+.header-right { display:flex; align-items:center; gap:10px; }
+.search-bar { padding:8px 12px; width:260px; border-radius:8px; border:1px solid #d6dbe6; }
+.logout-btn { background:#e55353; color:white; padding:7px 12px; border-radius:6px; text-decoration:none; }
+
+/* Main layout */
+.main-container { display:flex; margin-top:60px; }
+
+/* Sidebar */
+.sidebar {
+  width: 240px; padding:24px 18px; background:#fff; border-right:1px solid #e6e9ee;
+  height: calc(100vh - 60px); position:fixed; top:60px; left:0;
+}
+.menu-title { margin-bottom:14px; color:#1f3b57; font-weight:600; }
+.sidebar ul { list-style:none; padding:0; }
+.sidebar li { margin-bottom:12px; }
+.sidebar a { text-decoration:none; color:#2b3b4b; padding:8px 10px; display:block; border-radius:8px; }
+.sidebar a.active, .sidebar a:hover { background:#eef6ff; }
+
+/* Content */
+.content {
+  margin-left: 260px; padding:28px; width:100%;
+  min-height: calc(100vh - 60px);
+}
+
+/* Top stats */
+.top-stats { display:flex; gap:18px; margin-bottom:20px; }
+.stat-card { flex:1; padding:18px; border-radius:10px; color:#fff; }
+.stat-title { font-size:14px; opacity:.9; }
+.stat-value { font-size:28px; font-weight:700; margin-top:8px; }
+.stat-card.blue { background:#2b7be4; }
+.stat-card.red { background:#ff6b6b; }
+.stat-card.green { background:#2ecc71; }
+
+/* Grid of cards */
+.grid { display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:start; }
+.card { background:#fff; padding:18px; border-radius:10px; box-shadow:0 2px 6px rgba(20,30,40,0.04); }
+
+/* Table */
+table { width:100%; border-collapse:collapse; font-size:14px; }
+thead th { text-align:left; color:#556; padding-bottom:8px; }
+tbody td { padding:12px 0; border-top:1px solid #f0f2f5; }
+
+/* Category buttons */
+.category-buttons { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+.cat-btn { display:inline-block; padding:8px 14px; background:#eef7ff; color:#1f6fe4; border-radius:8px; text-decoration:none; }
+
+/* responsive */
+@media (max-width: 900px) {
+  .grid { grid-template-columns: 1fr; }
+  .sidebar { display:none; }
+  .content { margin-left: 0; padding:12px;}
+}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div th:fragment="header">
+      <header class="header">
+        <div class="header-left">
+          <h2 class="app-name">CampusAssist</h2>
+        </div>
+
+        <div class="header-right">
+          <form th:action="@{/search}" method="get" class="search-form">
+            <input name="q" type="text" placeholder="Search complaints or pages..." class="search-bar" />
+          </form>
+
+          <a th:href="@{/profile}" class="profile-icon" title="Profile">
+            <i class="fas fa-user-circle"></i>
+          </a>
+          <a th:href="@{/logout}" class="logout-btn">Logout</a>
+        </div>
+      </header>
+    </div>
+  </body>
+</html>

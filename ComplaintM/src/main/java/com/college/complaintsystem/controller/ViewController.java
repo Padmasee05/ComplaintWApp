@@ -30,4 +30,18 @@ public class ViewController {
     public String showLoginPage() {
         return "login"; // We'll create login.html next
     }
+    
+    @GetMapping("/dashboard")
+    public String showDashboard(Model model) {
+        // sample placeholders — replace with real service calls later
+        model.addAttribute("student", new Student()); // or fetch logged-in student
+        model.addAttribute("totalComplaints", 0);
+        model.addAttribute("urgentComplaints", 0);
+        model.addAttribute("resolvedComplaints", 0);
+        model.addAttribute("myComplaints", new java.util.ArrayList<>());
+        model.addAttribute("recentActivity", new java.util.ArrayList<>());
+        model.addAttribute("frequentComplaints", new java.util.ArrayList<>()); // List<Object[]> later
+        return "dashboard";
+    }
+
 }

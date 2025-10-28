@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div th:fragment="sidebar">
+      <aside class="sidebar">
+        <h3 class="menu-title">My Menu</h3>
+        <ul>
+          <li>
+            <a th:href="@{/complaint/register}" class="active">➕ Register New Complaint</a>
+          </li>
+          <li>
+            <a th:href="@{/complaint/track}">🧭 Track Complaint</a>
+          </li>
+          <li>
+            <a th:href="@{/profile}">👤 Profile</a>
+          </li>
+          <li>
+            <a th:href="@{/dashboard}">🏠 Home</a>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </body>
+</html>
