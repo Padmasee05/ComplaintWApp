@@ -9,13 +9,13 @@
 
         <div class="header-right">
           <form th:action="@{/search}" method="get" class="search-form">
-            <input name="q" type="text" placeholder="Search complaints or pages..." class="search-bar" />
+      			<input type="text" name="keyword" class="search-bar" placeholder="Search complaints or anything..." />
           </form>
 
           <a th:href="@{/profile}" class="profile-icon" title="Profile">
             <i class="fas fa-user-circle"></i>
           </a>
-          <a th:href="@{/logout}" class="logout-btn">Logout</a>
+          <a th:href="@{/logout}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </header>
     </div>

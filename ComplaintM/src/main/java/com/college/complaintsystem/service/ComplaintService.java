@@ -1,6 +1,7 @@
 package com.college.complaintsystem.service;
 
 import java.util.List;
+import java.util.Comparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.college.complaintsystem.model.Complaint;
@@ -21,6 +22,12 @@ public class ComplaintService {
         return complaintRepository.findAll();
     }
 
+    public List<Complaint> getComplaintsByStudentId(Long studentId) {
+        return complaintRepository.findByStudentId(studentId);
+    }
+
+   
+
     public Complaint getComplaintById(Long id) {
         return complaintRepository.findById(id).orElse(null);
     }
@@ -35,6 +42,7 @@ public class ComplaintService {
         Complaint complaint = complaintRepository.findById(id).orElse(null);
         if (complaint != null) {
             complaint.setStatus(status);
+            complaint.setUpdatedAt(LocalDateTime.now()); 
             return complaintRepository.save(complaint);
         }
         return null;
@@ -44,7 +52,16 @@ public class ComplaintService {
         complaintRepository.deleteById(id);
     }
     
- // ✅ New method — get frequent complaints of the last week
+    public List<Complaint> getRecentComplaintsByStudent(Long studentId) {
+        return complaintRepository.findByStudentId(studentId)
+                .stream()
+                .sorted(Comparator.comparing(Complaint::getUpdatedAt).reversed())
+                .limit(5)
+                .toList();
+    }
+
+    
+ //  get frequent complaints of the last week
     public List<Object[]> getFrequentComplaintsLastWeek() {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
         return complaintRepository.findFrequentComplaintsLastWeek(oneWeekAgo);

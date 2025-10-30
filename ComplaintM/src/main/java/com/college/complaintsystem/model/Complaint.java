@@ -34,10 +34,20 @@ public class Complaint {
     private Student student; // links each complaint to a student
 
     public Complaint() {
-        this.createdAt = LocalDateTime.now();
         this.status = "Pending";
     }
 
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+    
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

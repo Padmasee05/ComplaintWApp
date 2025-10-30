@@ -20,17 +20,17 @@
     <main class="content">
       <div class="top-stats">
         <div class="stat-card blue">
-          <div class="stat-title">Total Complaints</div>
-          <div class="stat-value" th:text="${totalComplaints}">0</div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-title">Urgent Complaints</div>
-          <div class="stat-value" th:text="${urgentComplaints}">0</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-title">Resolved Complaints</div>
-          <div class="stat-value" th:text="${resolvedComplaints}">0</div>
-        </div>
+  <div class="stat-title">Total Complaints</div>
+  <div class="stat-value" th:text="${#lists.size(userComplaints)}">0</div>
+</div>
+<div class="stat-card red">
+  <div class="stat-title">Pending</div>
+  <div class="stat-value" th:text="${pendingCount}">0</div>
+</div>
+<div class="stat-card green">
+  <div class="stat-title">Resolved</div>
+  <div class="stat-value" th:text="${resolvedCount}">0</div>
+</div>
       </div>
 
       <div class="grid">
@@ -53,14 +53,14 @@
               <tr><th>ID</th><th>Title</th><th>Category</th><th>Status</th><th>Updated</th></tr>
             </thead>
             <tbody>
-              <tr th:each="c : ${myComplaints}">
+              <tr th:each="c : ${userComplaints}">
                 <td th:text="${c.id}">#C001</td>
                 <td th:text="${c.title}">Title</td>
                 <td th:text="${c.category}">Hostel</td>
                 <td th:text="${c.status}">Pending</td>
                 <td th:text="${#dates.format(c.updatedAt != null ? c.updatedAt : c.createdAt, 'dd MMM yyyy HH:mm')}">3d ago</td>
               </tr>
-              <tr th:if="${#lists.isEmpty(myComplaints)}">
+              <tr th:if="${#lists.isEmpty(userComplaints)}">
                 <td colspan="5">No complaints yet</td>
               </tr>
             </tbody>
@@ -81,7 +81,7 @@
           <h3>Frequent Complaints (This Week)</h3>
           <ul>
             <li th:each="f : ${frequentComplaints}">
-              <span th:text="${f[0]}">Category</span> — <strong th:text="${f[1]}">count</strong>
+  			<span th:text="${entry.key}">Category</span> — <strong th:text="${entry.value}">count</strong>
             </li>
             <li th:if="${#lists.isEmpty(frequentComplaints)}">No frequent complaints this week</li>
           </ul>
@@ -91,4 +91,45 @@
   </div>
 
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const searchInput = document.querySelector(".search-bar");
+
+  // Function to remove old highlights
+  function removeHighlights() {
+    document.querySelectorAll("mark").forEach(mark => {
+      const parent = mark.parentNode;
+      parent.replaceChild(document.createTextNode(mark.textContent), mark);
+      parent.normalize();
+    });
+  }
+
+  // Function to highlight text
+  function highlightText(term) {
+    if (!term) return;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    const regex = new RegExp(term, "gi");
+    let node;
+    while (node = walker.nextNode()) {
+      const matches = node.nodeValue.match(regex);
+      if (matches) {
+        const span = document.createElement("span");
+        span.innerHTML = node.nodeValue.replace(regex, `<mark>$&</mark>`);
+        node.parentNode.replaceChild(span, node);
+      }
+    }
+  }
+
+  // Handle Enter press
+  searchInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const term = this.value.trim();
+      removeHighlights();
+      if (term) highlightText(term);
+    }
+  });
+});
+</script>
+
 </html>

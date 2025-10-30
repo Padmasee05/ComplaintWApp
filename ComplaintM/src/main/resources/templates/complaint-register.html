@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Register Complaint</title>
+  <link rel="stylesheet" th:href="@{/css/complaint-register.css}" />
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}" /> <!-- Keep layout consistent -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <!-- Include header -->
+  <div th:replace="fragments/header :: header"></div>
+
+  <div class="register-container">
+    <!-- Include sidebar -->
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <main class="register-content">
+      <div class="register-card">
+        <h2>Register Complaint</h2>
+
+        <form th:action="@{/complaint/submit}" method="post" enctype="multipart/form-data" id="complaintForm">
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+              <option value="">Select Category</option>
+              <option>Hostel</option>
+              <option>IT</option>
+              <option>Mess</option>
+              <option>Academics</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="title">Complaint Title</label>
+            <input type="text" id="title" name="title" placeholder="Enter complaint title" required>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Complaint Description</label>
+            <textarea id="description" name="description" placeholder="Describe your issue..." required></textarea>
+          </div>
+
+          <!-- Button to show file upload -->
+          <button type="button" id="addAttachmentBtn" class="btn btn-outline">+ Add Attachment</button>
+
+          <!-- Hidden file upload section -->
+          <div class="form-group hidden" id="fileUploadSection">
+            <label for="file">Attach File (optional)</label>
+            <input type="file" id="file" name="file" accept="image/*">
+            <div class="file-preview" id="filePreview"></div>
+          </div>
+          
+		<!--  Section for Anonymous & Urgent -->
+		  <div class="form-group check-options">
+		    <label><input type="checkbox" name="anonymous"> Submit Anonymously</label>
+		    <label><input type="checkbox" name="urgent"> Mark as Urgent</label>
+		  </div>
+		  
+          <div class="form-buttons">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a th:href="@{/dashboard}" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Show file upload section when user clicks “Add Attachment”
+    document.getElementById('addAttachmentBtn').addEventListener('click', function() {
+      const section = document.getElementById('fileUploadSection');
+      section.classList.toggle('hidden');
+      this.textContent = section.classList.contains('hidden') ? '+ Add Attachment' : '– Remove Attachment';
+    });
+
+    // ✅ Preview image before upload
+    document.getElementById('file').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('filePreview');
+      preview.innerHTML = '';
+
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.classList.add('preview-image');
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // ✅ SweetAlert popup on successful submit
+    document.getElementById('complaintForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // prevent immediate submission
+      Swal.fire({
+        title: "Complaint Submitted!",
+        text: "Your complaint has been successfully registered.",
+        icon: "success",
+        confirmButtonColor: "#2b7be4"
+      }).then(() => {
+        this.submit(); // submit form after alert confirmation
+      });
+    });
+  </script>
+
+</body>
+</html>

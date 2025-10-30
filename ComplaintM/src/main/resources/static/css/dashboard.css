@@ -26,7 +26,10 @@ body { margin: 0; background: #f4f6f8; color: #223; }
 .sidebar ul { list-style:none; padding:0; }
 .sidebar li { margin-bottom:12px; }
 .sidebar a { text-decoration:none; color:#2b3b4b; padding:8px 10px; display:block; border-radius:8px; }
-.sidebar a.active, .sidebar a:hover { background:#eef6ff; }
+.sidebar a.active, .sidebar a:hover {  background: #eef6ff;
+  color: #0056b3;
+  font-weight: 600;
+}
 
 /* Content */
 .content {
@@ -62,3 +65,18 @@ tbody td { padding:12px 0; border-top:1px solid #f0f2f5; }
   .sidebar { display:none; }
   .content { margin-left: 0; padding:12px;}
 }
+
+.search-bar:focus {
+  outline: none;
+  border-color: #1f6fe4;
+  box-shadow: 0 0 0 2px rgba(31, 111, 228, 0.2);
+}
+
+mark {
+  background-color: #ffeb3b;
+  color: #000;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+

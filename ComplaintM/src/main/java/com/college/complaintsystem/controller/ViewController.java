@@ -1,6 +1,7 @@
 package com.college.complaintsystem.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,14 @@ public class ViewController {
         return "login"; // We'll create login.html next
     }
     
-    @GetMapping("/dashboard")
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // ✅ Clears all session data
+        return "redirect:/login"; // ✅ Redirects back to login page
+    }
+
+    
+   /* @GetMapping("/dashboard")
     public String showDashboard(Model model) {
         // sample placeholders — replace with real service calls later
         model.addAttribute("student", new Student()); // or fetch logged-in student
@@ -43,5 +51,17 @@ public class ViewController {
         model.addAttribute("frequentComplaints", new java.util.ArrayList<>()); // List<Object[]> later
         return "dashboard";
     }
+    
+    @GetMapping("/dashboard")
+    public String showDashboard(HttpSession session, Model model) {
+        Student loggedInStudent = (Student) session.getAttribute("loggedInStudent");
+
+        if (loggedInStudent == null) {
+            return "redirect:/login"; // not logged in
+        }
+
+        model.addAttribute("student", loggedInStudent);
+        return "dashboard"; //  dashboard.html
+    }*/
 
 }

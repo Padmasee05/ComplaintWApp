@@ -1,0 +1,154 @@
+/* complaint-register.css */
+
+.register-container {
+  display: flex;
+  margin-top: 60px;
+}
+
+.register-content {
+  margin-left: 260px;
+  width: 100%;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.register-card {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(20,30,40,0.08);
+  width: 100%;
+  max-width: 600px;
+}
+
+.register-card h2 {
+  text-align: center;
+  color: #1f3b57;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #2b3b4b;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d6dbe6;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: none;
+}
+
+.form-group textarea {
+  min-height: 100px;
+}
+
+.file-preview {
+  margin-top: 10px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid #d6dbe6;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-primary {
+  background: #2b7be4;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1f6fe4;
+}
+
+.btn-secondary {
+  background: #e6e9ee;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background: #d6dbe6;
+}
+
+.btn-outline {
+  background: #fff;
+  color: #2b7be4;
+  border: 1px solid #2b7be4;
+  margin-bottom: 10px;
+}
+
+.btn-outline:hover {
+  background: #eaf3ff;
+}
+
+/* Layout for buttons */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Hidden section */
+.hidden {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .register-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+  .register-card {
+    padding: 20px;
+  }
+}
+
+/* Checkbox group styling */
+.check-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+}
+
+.check-options label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  gap: 6px;
+}
+
+.check-options input[type="checkbox"] {
+  transform: scale(1.1);
+}
+
