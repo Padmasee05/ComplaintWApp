@@ -154,10 +154,12 @@ public class DashboardController {
         complaint.setUpdatedAt(LocalDateTime.now());
 
         if (!anonymous) {
-            complaint.setStudent(student);
+            complaint.setAnonymous(false);
         } else {
-            complaint.setStudent(null);
+            complaint.setAnonymous(true);
         }
+        complaint.setStudent(student);
+
 
         // ✅ Handle file upload
         if (file != null && !file.isEmpty()) {
