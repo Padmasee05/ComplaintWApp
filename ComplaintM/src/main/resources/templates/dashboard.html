@@ -38,10 +38,11 @@
         <section class="card quick-register">
           <h3>Register by Category</h3>
           <div class="category-buttons">
-            <a th:href="@{/complaint/register?category=Hostel}" class="cat-btn">Hostel</a>
-            <a th:href="@{/complaint/register?category=IT}" class="cat-btn">IT</a>
-            <a th:href="@{/complaint/register?category=Mess}" class="cat-btn">Mess</a>
-            <a th:href="@{/complaint/register?category=Academics}" class="cat-btn">Academics</a>
+            <a th:href="@{/complaint/register(category='Hostel')}" class="cat-btn">Hostel</a>
+			<a th:href="@{/complaint/register(category='IT')}" class="cat-btn">IT</a>
+			<a th:href="@{/complaint/register(category='Mess')}" class="cat-btn">Mess</a>
+			<a th:href="@{/complaint/register(category='Academics')}" class="cat-btn">Academics</a>
+			<a th:href="@{/complaint/register(category='Other')}" class="cat-btn">Other</a>
           </div>
         </section>
 
@@ -58,7 +59,7 @@
                 <td th:text="${c.title}">Title</td>
                 <td th:text="${c.category}">Hostel</td>
                 <td th:text="${c.status}">Pending</td>
-                <td th:text="${#dates.format(c.updatedAt != null ? c.updatedAt : c.createdAt, 'dd MMM yyyy HH:mm')}">3d ago</td>
+				<td th:text="${#temporals.format(c.updatedAt != null ? c.updatedAt : c.createdAt, 'dd MMM yyyy HH:mm')}">3d ago</td>
               </tr>
               <tr th:if="${#lists.isEmpty(userComplaints)}">
                 <td colspan="5">No complaints yet</td>
@@ -81,8 +82,9 @@
           <h3>Frequent Complaints (This Week)</h3>
           <ul>
             <li th:each="f : ${frequentComplaints}">
-  			<span th:text="${entry.key}">Category</span> — <strong th:text="${entry.value}">count</strong>
-            </li>
+   			<span th:text="${f.key}">Category</span> — <strong th:text="${f.value}">count</strong>
+			</li>
+
             <li th:if="${#lists.isEmpty(frequentComplaints)}">No frequent complaints this week</li>
           </ul>
         </section>

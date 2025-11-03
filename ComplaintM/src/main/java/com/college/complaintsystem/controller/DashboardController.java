@@ -14,6 +14,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 @Controller
 public class DashboardController {
@@ -97,9 +106,90 @@ public class DashboardController {
     }
     
     @GetMapping("/complaint/register")
-    public String showComplaintRegisterPage(HttpServletRequest request, Model model) {
-    	model.addAttribute("currentPath", request.getRequestURI());
-    	return "complaint-register";  // this corresponds to complaint-register.html
+    public String showComplaintRegisterPage(
+            @RequestParam(required = false) String category,
+            HttpSession session,
+            HttpServletRequest request,
+            Model model) {
+
+        Student student = (Student) session.getAttribute("loggedInStudent");
+        if (student == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("student", student);
+        model.addAttribute("currentPath", request.getRequestURI());
+        model.addAttribute("selectedCategory", category);
+
+        return "complaint-register";
     }
 
+
+
+    
+    @PostMapping("/complaint/submit")
+    public String submitComplaint(
+            @RequestParam("category") String category,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam(value = "anonymous", required = false) boolean anonymous,
+            @RequestParam(value = "urgent", required = false) boolean urgent,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            HttpSession session,
+            Model model
+    ) {
+        Student student = (Student) session.getAttribute("loggedInStudent");
+        if (student == null) {
+            return "redirect:/login";
+        }
+
+        Complaint complaint = new Complaint();
+        complaint.setCategory(category);
+        complaint.setTitle(title);
+        complaint.setDescription(description);
+        complaint.setAnonymous(anonymous);
+        complaint.setUrgent(urgent);
+        complaint.setStatus("Pending");
+        complaint.setCreatedAt(LocalDateTime.now());
+        complaint.setUpdatedAt(LocalDateTime.now());
+
+        if (!anonymous) {
+            complaint.setStudent(student);
+        } else {
+            complaint.setStudent(null);
+        }
+
+        // ✅ Handle file upload
+        if (file != null && !file.isEmpty()) {
+            try {
+                // Create upload folder if it doesn’t exist
+                String uploadDir = "uploads/";
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                // Generate unique file name
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir, fileName);
+
+                // Save file to disk
+                Files.write(filePath, file.getBytes());
+
+                // Save relative path in DB
+                complaint.setImageUrl("/" + uploadDir + fileName);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // ✅ Save complaint in database
+        complaintService.saveComplaint(complaint);
+
+        // Redirect with success message
+        model.addAttribute("successMessage", "Complaint submitted successfully!");
+        return "complaint-register";
+    }
+    
 }

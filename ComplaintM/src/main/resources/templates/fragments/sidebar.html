@@ -7,21 +7,21 @@
        <ul>
 		  <li>
 		    <a th:href="@{/complaint/register}"
-		       th:classappend="${currentPath.startsWith('/complaint/register')} ? 'active' : ''">
+		       th:classappend="${currentPath != null and currentPath.startsWith('/complaint/register')} ? 'active' : ''">
 		       ➕ Register New Complaint
 		    </a>
 		  </li>
 		
 		  <li>
 		    <a th:href="@{/complaint/track}"
-		       th:classappend="${currentPath.startsWith('/complaint/track')} ? 'active' : ''">
+		       th:classappend="${currentPath != null and currentPath.startsWith('/complaint/track')} ? 'active' : ''">
 		       🧭 Track Complaint
 		    </a>
 		  </li>
 		
 		  <li>
 		    <a th:href="@{/profile}"
-		       th:classappend="${currentPath.startsWith('/profile')} ? 'active' : ''">
+		       th:classappend="${currentPath != null and currentPath.startsWith('/profile')} ? 'active' : ''">
 		       👤 Profile
 		    </a>
 		  </li>

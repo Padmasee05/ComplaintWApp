@@ -25,13 +25,14 @@
           <div class="form-group">
             <label for="category">Category</label>
             <select id="category" name="category" required>
-              <option value="">Select Category</option>
-              <option>Hostel</option>
-              <option>IT</option>
-              <option>Mess</option>
-              <option>Academics</option>
-              <option>Other</option>
-            </select>
+			  <option value="">Select Category</option>
+			  <option th:value="Hostel" th:selected="${selectedCategory == 'Hostel'}">Hostel</option>
+			  <option th:value="IT" th:selected="${selectedCategory == 'IT'}">IT</option>
+			  <option th:value="Mess" th:selected="${selectedCategory == 'Mess'}">Mess</option>
+			  <option th:value="Academics" th:selected="${selectedCategory == 'Academics'}">Academics</option>
+			  <option th:value="Other" th:selected="${selectedCategory == 'Other'}">Other</option>
+			</select>
+
           </div>
 
           <div class="form-group">
