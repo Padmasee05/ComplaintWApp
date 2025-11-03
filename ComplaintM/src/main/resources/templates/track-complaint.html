@@ -193,7 +193,7 @@ document.addEventListener("click", function(e) {
 
     Swal.fire({
       title: "Are you sure?",
-      text: `Do you want to delete complaint #${id}?`,
+      text: `This will permanently delete complaint #${id}.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#e74c3c",
@@ -201,8 +201,34 @@ document.addEventListener("click", function(e) {
       confirmButtonText: "Yes, delete it!"
     }).then(result => {
       if (result.isConfirmed) {
-        row.remove(); // ✅ frontend delete for now
-        Swal.fire("Deleted!", "Your complaint has been removed.", "success");
+        // ✅ Backend delete request
+        fetch(`/complaints/${id}`, { method: "DELETE" })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Failed to delete complaint");
+            }
+            return response.text();
+          })
+          .then(() => {
+            // ✅ Remove from table only after success
+            row.remove();
+
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your complaint has been deleted successfully.",
+              icon: "success",
+              timer: 1500,
+              showConfirmButton: false
+            });
+          })
+          .catch(error => {
+            console.error(error);
+            Swal.fire({
+              title: "Error",
+              text: "Something went wrong. Please try again.",
+              icon: "error"
+            });
+          });
       }
     });
   }
