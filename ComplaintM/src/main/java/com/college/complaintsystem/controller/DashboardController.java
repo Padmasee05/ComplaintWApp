@@ -58,16 +58,21 @@ public class DashboardController {
         long pendingCount   = userComplaints.stream().filter(c -> "Pending".equalsIgnoreCase(c.getStatus())).count();
         long resolvedCount  = userComplaints.stream().filter(c -> "Resolved".equalsIgnoreCase(c.getStatus())).count();
 
-        // Frequent complaints across all students
-        List<Complaint> allComplaints = complaintService.getAllComplaints();
-        Map<String, Long> categoryFrequency = allComplaints.stream()
-                .collect(Collectors.groupingBy(Complaint::getCategory, Collectors.counting()));
+     // ✅ Frequent complaints from the last 7 days (this week)
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+        List<Object[]> weeklyFrequentData = complaintService.findFrequentComplaintsLastWeek(oneWeekAgo);
 
-        // top 3 most frequent categories
-        List<Map.Entry<String, Long>> frequentComplaints = categoryFrequency.entrySet().stream()
-                .sorted((a, b) -> Long.compare(b.getValue(), a.getValue()))
-                .limit(3)
-                .toList();
+     // Convert to readable structure for the view (category + count)
+        List<Map<String, Object>> frequentComplaints = weeklyFrequentData.stream()
+            .map(obj -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("category", (String) obj[0]);
+                map.put("count", ((Long) obj[1]));
+                return map;
+            })
+            .limit(3) // only top 3
+            .toList();
+        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
         List<String> recentActivity = userComplaints.stream()
                 .sorted((a, b) -> b.getUpdatedAt().compareTo(a.getUpdatedAt()))

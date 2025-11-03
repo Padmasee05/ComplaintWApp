@@ -62,8 +62,7 @@ public class ComplaintService {
 
     
  //  get frequent complaints of the last week
-    public List<Object[]> getFrequentComplaintsLastWeek() {
-        LocalDateTime oneWeekAgo = LocalDateTime.now().minusDays(7);
+    public List<Object[]> findFrequentComplaintsLastWeek(LocalDateTime oneWeekAgo) {
         return complaintRepository.findFrequentComplaintsLastWeek(oneWeekAgo);
     }
 }

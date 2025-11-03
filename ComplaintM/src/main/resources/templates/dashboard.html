@@ -90,7 +90,7 @@
           <h3>Frequent Complaints (This Week)</h3>
           <ul>
             <li th:each="f : ${frequentComplaints}">
-   			<span th:text="${f.key}">Category</span> — <strong th:text="${f.value}">count</strong>
+   			<span th:text="${f.category}">Category</span> — <strong th:text="${f.count}">count</strong>
 			</li>
 
             <li th:if="${#lists.isEmpty(frequentComplaints)}">No frequent complaints this week</li>

@@ -27,6 +27,7 @@
           <div class="filter-buttons">
             <button class="filter-btn active" id="allBtn">All Complaints</button>
             <button class="filter-btn" id="pendingBtn">Pending</button>
+            <button class="filter-btn" id="inProgressBtn">In Progress</button>
             <button class="filter-btn" id="resolvedBtn">Resolved</button>
             <button class="filter-btn" id="deletePendingBtn">Delete Pending</button>
           </div>
@@ -104,6 +105,31 @@
           </table>
         </div>
 
+<!-- 🚧 In Progress Complaints Table -->
+        <div id="inProgressComplaintsTable" class="complaint-table hidden">
+          <h3>In Progress Complaints</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="complaint : ${userComplaints}"
+                  th:if="${complaint.status.equalsIgnoreCase('In Progress')}">
+                <td th:text="${complaint.id}"></td>
+                <td th:text="${complaint.title}"></td>
+                <td th:text="${complaint.category}"></td>
+                <td th:text="${#temporals.format(complaint.updatedAt, 'dd MMM yyyy HH:mm')}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
         <!-- ✅ Resolved Complaints Table -->
         <div id="resolvedComplaintsTable" class="complaint-table hidden">
           <h3>Resolved Complaints</h3>
@@ -135,11 +161,13 @@
   <script>
 const allBtn = document.getElementById("allBtn");
 const pendingBtn = document.getElementById("pendingBtn");
+const inProgressBtn = document.getElementById("inProgressBtn");
 const resolvedBtn = document.getElementById("resolvedBtn");
 const deletePendingBtn = document.getElementById("deletePendingBtn");
 
 const allTable = document.getElementById("allComplaintsTable");
 const pendingTable = document.getElementById("pendingComplaintsTable");
+const inProgressTable = document.getElementById("inProgressComplaintsTable");
 const resolvedTable = document.getElementById("resolvedComplaintsTable");
 
 const searchInput = document.getElementById("searchInput");
@@ -154,10 +182,11 @@ function showTable(type) {
   // hide all tables
   allTable.classList.add("hidden");
   pendingTable.classList.add("hidden");
+  inProgressTable.classList.add("hidden");
   resolvedTable.classList.add("hidden");
 
   // reset button states
-  [allBtn, pendingBtn, resolvedBtn, deletePendingBtn].forEach(btn => btn.classList.remove("active"));
+  [allBtn, pendingBtn,inProgressBtn, resolvedBtn, deletePendingBtn].forEach(btn => btn.classList.remove("active"));
 
   if (type === "all") {
     allTable.classList.remove("hidden");
@@ -165,7 +194,10 @@ function showTable(type) {
   } else if (type === "pending") {
     pendingTable.classList.remove("hidden");
     pendingBtn.classList.add("active");
-  } else if (type === "resolved") {
+  }else if (type === "inProgress") {
+	inProgressTable.classList.remove("hidden");
+	inProgressBtn.classList.add("active");
+  }else if (type === "resolved") {
     resolvedTable.classList.remove("hidden");
     resolvedBtn.classList.add("active");
   } else if (type === "deletePending") {
@@ -211,7 +243,7 @@ document.addEventListener("click", function(e) {
           })
           .then(() => {
             // ✅ Remove from table only after success
-            row.remove();
+            
 
             Swal.fire({
               title: "Deleted!",
@@ -219,6 +251,8 @@ document.addEventListener("click", function(e) {
               icon: "success",
               timer: 1500,
               showConfirmButton: false
+            }).then(() => {
+                location.reload(); // ✅ refresh the tables after delete
             });
           })
           .catch(error => {
@@ -239,11 +273,14 @@ function applySearchFilter() {
   const filter = searchInput.value.toLowerCase();
 
   const visibleTable =
-    activeType === "all"
-      ? allTable
-      : activeType === "pending" || activeType === "deletePending"
-      ? pendingTable
-      : resolvedTable;
+	  activeType === "all"
+	    ? allTable
+	    : activeType === "pending" || activeType === "deletePending"
+	    ? pendingTable
+	    : activeType === "inProgress"
+	    ? inProgressTable
+	    : resolvedTable;
+
 
   visibleTable.querySelectorAll("tbody tr").forEach(row => {
     const match = row.textContent.toLowerCase().includes(filter);
@@ -254,6 +291,7 @@ function applySearchFilter() {
 // 🔹 Button events
 allBtn.addEventListener("click", () => showTable("all"));
 pendingBtn.addEventListener("click", () => showTable("pending"));
+inProgressBtn.addEventListener("click", () => showTable("inProgress"));
 resolvedBtn.addEventListener("click", () => showTable("resolved"));
 deletePendingBtn.addEventListener("click", () => showTable("deletePending"));
 searchInput.addEventListener("keyup", applySearchFilter);
