@@ -1,0 +1,142 @@
+/* === Track Complaint Page === */
+
+.track-container {
+  margin-left: 260px;              /* space for sidebar */
+  margin-top: 100px;               /* pushes below fixed header */
+  padding: 20px 40px;
+  max-width: 1100px;
+  width: calc(100% - 260px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 20px;
+}
+
+/* Title */
+.track-container h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f3b57;
+  margin-bottom: 10px;
+}
+
+/* Search & Filters */
+.search-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-filter input {
+  padding: 10px 12px;
+  width: 300px;
+  border: 1px solid #d6dbe6;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  border: 1px solid #2b7be4;
+  background: #fff;
+  color: #2b7be4;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: #2b7be4;
+  color: #fff;
+}
+
+/* Tables */
+.complaint-table {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: 0 2px 8px rgba(20,30,40,0.08);
+  overflow-x: auto;
+}
+
+.complaint-table h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #1f3b57;
+}
+
+.complaint-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.complaint-table th,
+.complaint-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e6ef;
+}
+
+.complaint-table th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: #1f3b57;
+}
+
+.complaint-table tr:hover {
+  background-color: #f9fbff;
+}
+
+/* Hidden Tables */
+.hidden {
+  display: none;
+}
+
+/* Responsive Fixes */
+@media (max-width: 900px) {
+  .track-container {
+    margin-left: 0;
+    margin-top: 80px;
+    padding: 20px;
+  }
+
+  .search-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-filter input {
+    width: 100%;
+  }
+}
+
+.delete-btn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.delete-btn:hover {
+  background: #d93636;
+}
+
+.delete-col.hidden {
+  display: none;
+}
+

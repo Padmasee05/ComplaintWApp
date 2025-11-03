@@ -192,4 +192,22 @@ public class DashboardController {
         return "complaint-register";
     }
     
+    @GetMapping("/complaint/track")
+    public String showTrackComplaintPage(HttpSession session, HttpServletRequest request, Model model) {
+        Student student = (Student) session.getAttribute("loggedInStudent");
+        if (student == null) {
+            return "redirect:/login";
+        }
+
+        // Fetch all complaints of the logged-in student
+        List<Complaint> userComplaints = complaintService.getComplaintsByStudentId(student.getId());
+
+        model.addAttribute("userComplaints", userComplaints);
+        model.addAttribute("student", student);
+        model.addAttribute("currentPath", request.getRequestURI());
+
+        return "track-complaint"; // corresponds to track-complaint.html
+    }
+
+    
 }
