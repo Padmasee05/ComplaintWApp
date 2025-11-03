@@ -50,6 +50,11 @@ public class DashboardController {
 
         // Fetch user-specific data
         List<Complaint> userComplaints = complaintService.getComplaintsByStudentId(student.getId());
+     // Show only top 2 most recent complaints on dashboard
+        List<Complaint> recentThreeComplaints = userComplaints.stream()
+                .sorted((a, b) -> b.getUpdatedAt().compareTo(a.getUpdatedAt()))
+                .limit(2)
+                .toList();
         long pendingCount   = userComplaints.stream().filter(c -> "Pending".equalsIgnoreCase(c.getStatus())).count();
         long resolvedCount  = userComplaints.stream().filter(c -> "Resolved".equalsIgnoreCase(c.getStatus())).count();
 
@@ -77,9 +82,11 @@ public class DashboardController {
         model.addAttribute("recentActivity", recentActivity);
         model.addAttribute("student", student);
         model.addAttribute("userComplaints", userComplaints);
+        model.addAttribute("recentThreeComplaints", recentThreeComplaints); // 3 only (for dashboard)
         model.addAttribute("pendingCount", pendingCount);
         model.addAttribute("resolvedCount", resolvedCount);
         model.addAttribute("frequentComplaints", frequentComplaints);
+        model.addAttribute("totalComplaintsCount", userComplaints.size());
         model.addAttribute("currentPath", request.getRequestURI());
         return "dashboard";
     }
