@@ -43,6 +43,7 @@
                 <th>Category</th>
                 <th>Status</th>
                 <th>Updated</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -52,6 +53,24 @@
                 <td th:text="${complaint.category}"></td>
                 <td th:text="${complaint.status}"></td>
                 <td th:text="${#temporals.format(complaint.updatedAt, 'dd MMM yyyy HH:mm')}"></td>
+                <td>
+  					<button class="view-btn"
+        th:attr="data-title=${complaint.title},
+                 data-description=${complaint.description},
+                 data-category=${complaint.category},
+                 data-status=${complaint.status},
+                 data-imageurl=${complaint.imageUrl},
+                 data-anonymous=${complaint.anonymous},
+                 data-urgent=${complaint.urgent},
+                 data-created=${#temporals.format(complaint.createdAt, 'dd-MM-yyyy HH:mm')},
+                 data-updated=${#temporals.format(complaint.updatedAt, 'dd-MM-yyyy HH:mm')}"
+        onclick="openComplaintModal(this)">
+    View Details
+</button>
+
+
+				</td>
+                
               </tr>
             </tbody>
           </table>
@@ -212,6 +231,75 @@ pendingBtn.addEventListener("click", () => showTable("pending"));
 resolvedBtn.addEventListener("click", () => showTable("resolved"));
 deletePendingBtn.addEventListener("click", () => showTable("deletePending"));
 searchInput.addEventListener("keyup", applySearchFilter);
+</script>
+<!-- Complaint Details Modal -->
+<div id="complaintModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeComplaintModal()">&times;</span>
+    <h2 id="modal-title"></h2>
+    
+    <div class="modal-body">
+      <p><strong>Description:</strong> <span id="modal-description"></span></p>
+      <p><strong>Category:</strong> <span id="modal-category"></span></p>
+      <p><strong>Status:</strong> <span id="modal-status"></span></p>
+      <p><strong>Anonymous:</strong> <span id="modal-anonymous"></span></p>
+      <p><strong>Urgent:</strong> <span id="modal-urgent"></span></p>
+      <p><strong>Created At:</strong> <span id="modal-createdAt"></span></p>
+      <p><strong>Last Updated:</strong> <span id="modal-updatedAt"></span></p>
+
+      <div class="modal-image-container">
+        <p><strong>Attached Image:</strong></p>
+        <img id="modal-image" src="" alt="Complaint Image" />
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function openComplaintModal(button) {
+    const title = button.getAttribute("data-title");
+    const description = button.getAttribute("data-description");
+    const category = button.getAttribute("data-category");
+    const status = button.getAttribute("data-status");
+    const imageUrl = button.getAttribute("data-imageurl");
+    const anonymous = button.getAttribute("data-anonymous");
+    const urgent = button.getAttribute("data-urgent");
+    const createdAt = button.getAttribute("data-created");
+    const updatedAt = button.getAttribute("data-updated");
+
+    // ✅ Match the actual IDs in your HTML
+    document.getElementById("modal-title").innerText = title;
+    document.getElementById("modal-description").innerText = description;
+    document.getElementById("modal-category").innerText = category;
+    document.getElementById("modal-status").innerText = status;
+    document.getElementById("modal-anonymous").innerText = anonymous === "true" ? "Yes" : "No";
+    document.getElementById("modal-urgent").innerText = urgent === "true" ? "Yes" : "No";
+    document.getElementById("modal-createdAt").innerText = createdAt;
+    document.getElementById("modal-updatedAt").innerText = updatedAt;
+
+    const imageElement = document.getElementById("modal-image");
+    if (imageUrl && imageUrl.trim() !== "") {
+        imageElement.src = imageUrl;
+        imageElement.style.display = "block";
+    } else {
+        imageElement.style.display = "none";
+    }
+
+    // ✅ Show modal
+    document.getElementById("complaintModal").style.display = "block";
+}
+
+
+function closeComplaintModal() {
+  document.getElementById("complaintModal").style.display = "none";
+}
+
+// Close modal if user clicks outside the content
+window.onclick = function(event) {
+  const modal = document.getElementById("complaintModal");
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+}
 </script>
 
 </body>
