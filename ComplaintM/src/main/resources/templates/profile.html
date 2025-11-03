@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile | CampusAssist</title>
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}" /> <!-- Keep layout consistent -->
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+
+  <!-- Sidebar and header included -->
+  <div th:replace="fragments/sidebar :: sidebar"></div>
+  <div th:replace="fragments/header :: header"></div>
+
+  <div class="profile-container">
+    <div class="profile-card">
+
+      <h2 class="profile-title">Profile</h2>
+
+      <div class="profile-content">
+        <!-- Left: Student Details -->
+        <div class="profile-details">
+          <p><strong>Name:</strong> <span th:text="${student.name}">John Doe</span></p>
+          <p><strong>Email:</strong> <span th:text="${student.email}">john@college.edu</span></p>
+          <p><strong>Roll Number:</strong> <span th:text="${student.rollNumber}">21IT01</span></p>
+          <p><strong>Department:</strong> <span th:text="${student.department}">IT</span></p>
+          <p><strong>Hostel:</strong> <span th:text="${student.hostel}">A Block</span></p>
+          <p><strong>Phone:</strong> <span th:text="${student.phoneNumber}">+91 9876543210</span></p>
+
+          <button class="btn-primary" id="changePasswordBtn">Change Password</button>
+
+          <div id="passwordSection" class="hidden">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" id="currentPassword" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="newPassword" placeholder="Enter new password">
+            </div>
+            <br>
+            <button class="btn-secondary" id="confirmChangeBtn">Change</button>
+          </div>
+        </div>
+
+        <!-- Right: Profile Image -->
+        <div class="profile-image">
+          <img src="/images/user (3).png" alt="Profile Photo">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+document.getElementById('changePasswordBtn').addEventListener('click', function() {
+  document.getElementById('passwordSection').classList.toggle('hidden');
+});
+
+document.getElementById('confirmChangeBtn').addEventListener('click', function() {
+  const currentPassword = document.getElementById('currentPassword').value.trim();
+  const newPassword = document.getElementById('newPassword').value.trim();
+
+  if (!currentPassword || !newPassword) {
+    alert("Please fill out both fields!");
+    return;
+  }
+
+  fetch('/change-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `currentPassword=${encodeURIComponent(currentPassword)}&newPassword=${encodeURIComponent(newPassword)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "success") {
+      alert(data.message);
+      document.getElementById('passwordSection').classList.add('hidden');
+      document.getElementById('currentPassword').value = "";
+      document.getElementById('newPassword').value = "";
+    } else {
+      alert(data.message);
+    }
+  })
+  .catch(err => {
+    console.error("Error changing password:", err);
+    alert("Something went wrong. Try again.");
+  });
+});
+</script>
+
+
+</body>
+</html>

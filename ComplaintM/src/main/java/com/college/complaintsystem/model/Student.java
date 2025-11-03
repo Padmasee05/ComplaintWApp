@@ -15,6 +15,7 @@ public class Student {
 
     @Column(unique = true, nullable = false)
     private String email;
+    @Column(unique = true, nullable = false)
     private String rollNumber;
     private String phoneNumber;
     private String department;

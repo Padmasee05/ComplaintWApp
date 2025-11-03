@@ -10,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import com.college.complaintsystem.service.StudentService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +32,10 @@ public class DashboardController {
 
     @Autowired
     private ComplaintService complaintService;
+    
+    @Autowired
+    private StudentService studentService;
+
 
     @GetMapping("/dashboard")
     public String showDashboard(HttpSession session, HttpServletRequest request, Model model) {
@@ -211,5 +218,50 @@ public class DashboardController {
         return "track-complaint"; // corresponds to track-complaint.html
     }
 
-    
+    @GetMapping("/profile")
+    public String showProfile(HttpSession session, HttpServletRequest request, Model model) {
+        Student student = (Student) session.getAttribute("loggedInStudent");
+        if (student == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("student", student);
+        model.addAttribute("currentPath", request.getRequestURI());
+        return "profile";
+    }
+
+    @PostMapping("/change-password")
+    @ResponseBody
+    public Map<String, String> changePassword(
+            @RequestParam("currentPassword") String currentPassword,
+            @RequestParam("newPassword") String newPassword,
+            HttpSession session
+    ) {
+        Map<String, String> response = new HashMap<>();
+        Student student = (Student) session.getAttribute("loggedInStudent");
+        if (student == null) {
+            response.put("status", "error");
+            response.put("message", "Session expired. Please log in again.");
+            return response;
+        }
+
+        // Check current password
+        if (!student.getPassword().equals(currentPassword)) {
+            response.put("status", "error");
+            response.put("message", "Current password is incorrect!");
+            return response;
+        }
+
+        // Update password
+        student.setPassword(newPassword);
+        studentService.saveStudent(student);
+        session.setAttribute("loggedInStudent", student);
+
+        response.put("status", "success");
+        response.put("message", "Password changed successfully!");
+        return response;
+    }
+
+
+
 }
