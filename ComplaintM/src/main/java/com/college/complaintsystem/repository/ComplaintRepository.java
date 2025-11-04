@@ -18,6 +18,17 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
     // Find complaints by status (e.g., "Pending", "Resolved")
     List<Complaint> findByStatus(String status);
+    // ✅ Using category instead of department
+    long countByCategory(String category);
+
+    long countByCategoryAndStatus(String category, String status);
+
+    //  use urgent flag
+    long countByCategoryAndUrgentTrue(String category);
+
+    List<Complaint> findByCategory(String category);
+
+    List<Complaint> findByCategoryAndUrgentTrue(String category);
     
  // ✅ Find most frequent complaints from the last 7 days
     @Query("SELECT c.category, COUNT(c) as count " +

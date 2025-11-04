@@ -43,6 +43,7 @@
                 <th>Title</th>
                 <th>Category</th>
                 <th>Status</th>
+                <th>Urgent</th>
                 <th>Updated</th>
                 <th>Actions</th>
               </tr>
@@ -53,6 +54,7 @@
                 <td th:text="${complaint.title}"></td>
                 <td th:text="${complaint.category}"></td>
                 <td th:text="${complaint.status}"></td>
+                <td th:text="${complaint.urgent ? 'Yes' : 'No'}"></td>
                 <td th:text="${#temporals.format(complaint.updatedAt, 'dd MMM yyyy HH:mm')}"></td>
                 <td>
   					<button class="view-btn"
@@ -92,7 +94,7 @@
             </thead>
             <tbody>
               <tr th:each="complaint : ${userComplaints}"
-                  th:if="${complaint.status.equalsIgnoreCase('Pending')}">
+                  th:if="${complaint.status.equalsIgnoreCase('PENDING')}">
                 <td th:text="${complaint.id}"></td>
                 <td th:text="${complaint.title}"></td>
                 <td th:text="${complaint.category}"></td>
@@ -119,7 +121,7 @@
             </thead>
             <tbody>
               <tr th:each="complaint : ${userComplaints}"
-                  th:if="${complaint.status.equalsIgnoreCase('In Progress')}">
+                  th:if="${complaint.status.equalsIgnoreCase('IN_PROGRESS')}">
                 <td th:text="${complaint.id}"></td>
                 <td th:text="${complaint.title}"></td>
                 <td th:text="${complaint.category}"></td>
@@ -144,7 +146,7 @@
             </thead>
             <tbody>
               <tr th:each="complaint : ${userComplaints}"
-                  th:if="${complaint.status.equalsIgnoreCase('Resolved')}">
+                  th:if="${complaint.status.equalsIgnoreCase('RESOLVED')}">
                 <td th:text="${complaint.id}"></td>
                 <td th:text="${complaint.title}"></td>
                 <td th:text="${complaint.category}"></td>

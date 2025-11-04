@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}" />
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="header">
+      <div class="brand">
+        <div class="logo">CS</div>
+        <div>
+          <div class="title">Campus Assist</div>
+          <div style="font-size:12px;color: #eaf2ff">Admin Dashboard</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div th:text="${admin.name}" style="font-weight:600">Admin</div>
+        <button class="btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="top-panel">
+      <div class="welcome">
+        <h2>Welcome, <span th:text="${admin.name}">Admin</span></h2>
+        <p>Department: <strong th:text="${admin.department}">Hostel</strong></p>
+      </div>
+      <div class="action-area">
+		<a th:href="@{/admin/resolve-queue(adminId=${admin.id})}" class="resolve-link">Go to Resolve Screen</a>      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-row">
+      
+      <!-- Hero Section -->
+      <div class="hero">
+        <div class="hero-top">
+          <div class="hero-image">
+            <img th:src="@{/images/hero-illustration.png}" alt="hero" 
+                 style="max-width:100%;height:120px;object-fit:contain" />
+          </div>
+          <div class="hero-content">
+            <h3 style="margin:0">Quick Overview</h3>
+            <p class="hero-para">
+              You're viewing complaints assigned to 
+              <strong th:text="${admin.department}">Hostel</strong> department. 
+              Use the actions to assign or update status quickly.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats">
+        <div class="stat-card">
+          <h3>Total complaints (dept)</h3>
+          <div class="num" th:text="${stats.total}">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Unseen / Pending</h3>
+          <div class="num" th:text="${stats.pending}">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Reviewed / Resolved</h3>
+          <div class="num" th:text="${stats.resolved}">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Urgent complaints</h3>
+          <div class="num" th:text="${stats.urgent}">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Urgent Complaints Section -->
+    <div class="urgent-section">
+      <div class="urgent-header">
+        <h3>Urgent Complaints</h3>
+        <div style="color:var(--muted);font-size:13px">
+          Showing only urgent complaints for 
+          <strong th:text="${admin.department}">Hostel</strong>
+        </div>
+      </div>
+
+      <div class="cards">
+        <!-- Complaint Cards Loop -->
+        <div class="card" th:each="c : ${urgentComplaints}">
+          
+          <!-- Left: Student Info -->
+          <div class="card-left">
+            <div class="student-meta" th:if="${!c.anonymous}">
+              <div><strong th:text="${c.student.name}">Student Name</strong></div>
+              <div th:text="${c.student.email}">student@mail.edu</div>
+              <div th:text="${c.student.rollNumber}">123456</div>
+            </div>
+            <div class="student-meta" th:if="${c.anonymous}">
+              <div style="font-style:italic;color:var(--muted)">Anonymous</div>
+            </div>
+          </div>
+
+          <!-- Center: Complaint Details -->
+          <div class="card-center">
+            <div class="complaint-title" th:text="${c.title}">
+              Leaky faucet in hostel block A
+            </div>
+            <div class="complaint-desc" th:text="${c.description}">
+              The faucet in room ...
+            </div>
+
+            <!-- Actions -->
+            <div class="card-actions">
+              <div>
+                <label style="font-size:13px;color:var(--muted);">Assign to</label>
+                <select class="assign-select" th:id="'assign_' + ${c.id}">
+                  <option value="">Select</option>
+                  <option value="Ramesh Kumar">Ramesh Kumar</option>
+					<option value="Priya Sharma">Priya Sharma</option>
+					<option value="Rahul Verma">Rahul Verma</option>
+					<option value="Anjali Singh">Anjali Singh</option>
+					<option value="Maintenance Team">Maintenance Team</option>
+					<option value="Warden Office">Warden Office</option>
+
+
+                </select>
+                <button class="small-btn" th:attr="onclick='assignTo(' + ${c.id} + ')'">Assign</button>
+              </div>
+
+              <div>
+                <button class="small-btn" 
+                        th:attr="onclick='markInProgress(' + ${c.id} + ')'">
+                  In Progress
+                </button>
+                <button class="small-btn" 
+                        style="background:var(--success);color:white;border:none"
+                        th:attr="onclick='markResolved(' + ${c.id} + ')'">
+                  Resolved
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Meta Info -->
+          <div class="card-right">
+  <div style="font-size:13px;color:var(--muted)" 
+       th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}">
+    2025-10-01
+  </div>
+  <div style="font-size:13px;color:var(--warning)" 
+       th:text="${c.urgent ? 'High' : 'Normal'}">
+    High
+  </div>
+</div>
+
+        </div>
+        <!-- end loop -->
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+  // Logout (keeps same behaviour)
+  function logout() {
+    fetch('/logout', { method: 'POST' })
+      .then(res => {
+        // if server redirects, follow; otherwise go to login
+        window.location = '/login';
+      })
+      .catch(err => {
+        console.error('Logout error:', err);
+        window.location = '/login';
+      });
+  }
+
+  // Assign complaint to admin
+  function assignTo(id) {
+  const sel = document.getElementById('assign_' + id);
+  const name = sel ? sel.value : null;
+  if (!name) {
+    alert('Select a person to assign');
+    return;
+  }
+
+  fetch(`/complaints/${id}/assign`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ assigneeName: name })
+  })
+  .then(async res => {
+    const text = await res.text();
+    let body;
+    try { body = JSON.parse(text); } catch(e){ body = text; }
+    if (res.ok) {
+      alert((body && body.message) ? body.message : 'Assigned successfully');
+      location.reload();
+    } else {
+      console.error('Assign failed:', res.status, body);
+      alert('Assignment failed: ' + (body && body.message ? body.message : res.status));
+    }
+  })
+  .catch(err => {
+    console.error('Assign fetch error:', err);
+    alert('Assignment failed (network). See console for details.');
+  });
+}
+
+
+  // Mark as In Progress
+  function markInProgress(id) {
+    updateStatus(id, 'IN_PROGRESS');
+  }
+
+  // Mark as Resolved
+  function markResolved(id) {
+    updateStatus(id, 'RESOLVED');
+  }
+
+  // Helper: Update status using PUT (matches controller)
+  function updateStatus(id, status) {
+    fetch(`/complaints/${id}/status`, {
+      method: 'PUT', // IMPORTANT: controller expects PUT
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: status })
+    })
+    .then(async res => {
+      const text = await res.text();
+      let body;
+      try { body = JSON.parse(text); } catch(e){ body = text; }
+      if (res.ok) {
+        alert((body && body.message) ? body.message : 'Status updated');
+        location.reload();
+      } else {
+        console.error('Update status failed:', res.status, body);
+        alert('Failed to update status: ' + (body && body.message ? body.message : res.status));
+      }
+    })
+    .catch(err => {
+      console.error('Status fetch error:', err);
+      alert('Failed to update status (network). See console for details.');
+    });
+  }
+</script>
+
+</body>
+</html>

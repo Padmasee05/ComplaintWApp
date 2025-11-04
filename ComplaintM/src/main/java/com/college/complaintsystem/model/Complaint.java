@@ -33,8 +33,10 @@ public class Complaint {
     @JoinColumn(name = "student_id")
     private Student student; // links each complaint to a student
 
+    private String assignedTo;
+    
     public Complaint() {
-        this.status = "Pending";
+        this.status = "PENDING";
     }
 
     @PrePersist
@@ -81,4 +83,7 @@ public class Complaint {
 
     public Student getStudent() { return student; }
     public void setStudent(Student student) { this.student = student; }
+    
+    public String getAssignedTo() { return assignedTo; }      
+    public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; } 
 }

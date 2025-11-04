@@ -212,3 +212,9 @@
   background-color: #0056b3;
 }
 
+tr.urgent-row {
+  background-color: #ffeaea;
+  font-weight: 600;
+  color: #d00000;
+}
+
