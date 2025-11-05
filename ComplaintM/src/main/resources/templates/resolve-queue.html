@@ -53,6 +53,12 @@
           <div class="card-center">
             <div class="complaint-title" th:text="${c.title}">Complaint title</div>
             <div class="complaint-desc" th:text="${c.description}">Complaint description</div>
+            <a th:if="${c.imageUrl != null and c.imageUrl != ''}"
+               href="#"
+               th:attr="onclick=|openImageModal('${c.imageUrl}')|"
+               class="view-image-link">
+               View Image
+            </a>
             <div class="card-actions">
               <div>
                 <label style="font-size:13px;color:var(--muted);">Assign to</label>
@@ -88,12 +94,23 @@
       <div class="cards">
         <div class="card" th:each="c : ${inProgressComplaints}">
           <div class="card-left">
-            <strong th:text="${c.student.name}">Student</strong>
-          </div>
+		  <div th:if="${!c.anonymous}">
+		    <strong th:text="${c.student.name}">Student</strong><br>
+		    <span th:text="${c.student.email}">student@college.com</span><br>
+		    <span th:text="${c.student.rollNumber}">1234</span>
+		  </div>
+		  <div th:if="${c.anonymous}" style="font-style:italic;color:var(--muted)">Anonymous</div>
+		</div>
+
           <div class="card-center">
             <div class="complaint-title" th:text="${c.title}">Title</div>
             <div class="complaint-desc" th:text="${c.description}">Description</div>
-
+			<a th:if="${c.imageUrl != null and c.imageUrl != ''}"
+               href="#"
+               th:attr="onclick=|openImageModal('${c.imageUrl}')|"
+               class="view-image-link">
+               View Image
+            </a>
 			<div th:if="${c.assignedTo == null or #strings.isEmpty(c.assignedTo)}">
               <div class="card-actions">
                 <div>
@@ -127,11 +144,23 @@
       <div class="cards">
         <div class="card" th:each="c : ${resolvedComplaints}">
           <div class="card-left">
-            <strong th:text="${c.student.name}">Student</strong>
-          </div>
+		  <div th:if="${!c.anonymous}">
+		    <strong th:text="${c.student.name}">Student</strong><br>
+		    <span th:text="${c.student.email}">student@college.com</span><br>
+		    <span th:text="${c.student.rollNumber}">1234</span>
+		  </div>
+		  <div th:if="${c.anonymous}" style="font-style:italic;color:var(--muted)">Anonymous</div>
+		</div>
+
           <div class="card-center">
             <div class="complaint-title" th:text="${c.title}">Title</div>
             <div class="complaint-desc" th:text="${c.description}">Description</div>
+            <a th:if="${c.imageUrl != null and c.imageUrl != ''}"
+               href="#"
+               th:attr="onclick=|openImageModal('${c.imageUrl}')|"
+               class="view-image-link">
+               View Image
+            </a>
             <div style="font-size:13px;color:var(--muted);" th:if="${c.assignedTo}">
               Assigned to: <strong th:text="${c.assignedTo}">Staff</strong>
             </div>
@@ -144,11 +173,16 @@
       </div>
     </section>
   </div>
-
+  
+<div id="imageModal" class="image-modal" onclick="closeImageModal()">
+   <span class="close">&times;</span>
+   <img class="modal-content" id="modalImg" />
+ </div>
+ 
   <!-- ================= JS ================= -->
   <script>
 
-  // 🔹 Assign Complaint
+  //  Assign Complaint
   function assignTo(id) {
     const sel = document.getElementById('assign_' + id);
     const name = sel ? sel.value : null;
@@ -179,17 +213,17 @@
     });
   }
 
-  // 🔹 Mark In Progress
+  // Mark In Progress
   function markInProgress(id) {
     updateStatus(id, 'IN_PROGRESS');
   }
 
-  // 🔹 Mark Resolved
+  // Mark Resolved
   function markResolved(id) {
     updateStatus(id, 'RESOLVED');
   }
 
-  // 🔹 Helper to update complaint status
+  // Helper to update complaint status
   function updateStatus(id, status) {
     fetch(`/complaints/${id}/status`, {
       method: 'PUT',
@@ -212,6 +246,17 @@
       alert('Network error while updating status.');
     });
   }
+  
+  function openImageModal(imgUrl) {
+	    const modal = document.getElementById("imageModal");
+	    const modalImg = document.getElementById("modalImg");
+	    modal.style.display = "block";
+	    modalImg.src = imgUrl;
+	  }
+
+	  function closeImageModal() {
+	    document.getElementById("imageModal").style.display = "none";
+	  }
   </script>
 </body>
 </html>

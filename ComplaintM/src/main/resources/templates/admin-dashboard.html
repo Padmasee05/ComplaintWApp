@@ -90,6 +90,12 @@
       </div>
 
       <div class="cards">
+      
+      <div th:if="${#lists.isEmpty(urgentComplaints)}" 
+             style="text-align:center;color:var(--muted);padding:20px;font-style:italic;">
+          No urgent pending complaints yet.
+        </div>
+        
         <!-- Complaint Cards Loop -->
         <div class="card" th:each="c : ${urgentComplaints}">
           
@@ -113,6 +119,17 @@
             <div class="complaint-desc" th:text="${c.description}">
               The faucet in room ...
             </div>
+			<a th:if="${c.imageUrl != null and c.imageUrl != ''}"
+			   href="#"
+			   th:attr="onclick=|openImageModal('${c.imageUrl}')|"
+			   class="view-image-link">
+			   View Image
+			</a>
+
+
+
+
+
 
             <!-- Actions -->
             <div class="card-actions">
@@ -164,6 +181,12 @@
     </div>
 
   </div>
+  
+ <!-- === Image Modal === --> 
+ <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="modalImg" />
+</div>
 
   <script>
   
@@ -238,7 +261,17 @@
       alert('Failed to update status (network). See console for details.');
     });
   }
-</script>
+  
+  function openImageModal(imgUrl) {
+	  const modal = document.getElementById("imageModal");
+	  const modalImg = document.getElementById("modalImg");
+	  modal.style.display = "block";
+	  modalImg.src = imgUrl;
+	}
 
+	function closeImageModal() {
+	  document.getElementById("imageModal").style.display = "none";
+	}
+</script>
 </body>
 </html>

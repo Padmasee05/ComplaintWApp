@@ -63,7 +63,7 @@ public class ComplaintController {
         ));
     }
 
-    // ✅ Update complaint status
+    // Update complaint status
     @PutMapping("/{id}/status")
     public ResponseEntity<Map<String, Object>> updateStatus(
             @PathVariable Long id,

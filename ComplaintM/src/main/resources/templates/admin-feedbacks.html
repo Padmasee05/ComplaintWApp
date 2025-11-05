@@ -37,14 +37,20 @@
     <!-- Feedback Cards -->
     <div class="cards" style="margin-top:20px;">
       <div class="card" th:each="f : ${feedbacks}">
-        <div class="card-left">
-          <div><strong th:text="${f.student.name}">Student Name</strong></div>
-          <div th:text="${f.student.rollNumber}">Roll</div>
-          <div style="font-size:13px;color:var(--muted)" 
-               th:text="${#temporals.format(f.createdAt, 'yyyy-MM-dd HH:mm')}">
-            2025-11-01
-          </div>
-        </div>
+         <div class="card-left">
+	    <div th:if="${!f.complaint.anonymous}">
+	      <div><strong th:text="${f.student.name}">Student Name</strong></div>
+	      <div th:text="${f.student.rollNumber}">Roll</div>
+	    </div>
+	    <div th:if="${f.complaint.anonymous}" style="font-style:italic;color:var(--muted)">
+	      Anonymous
+	    </div>
+	
+	    <div style="font-size:13px;color:var(--muted)" 
+	         th:text="${#temporals.format(f.createdAt, 'yyyy-MM-dd HH:mm')}">
+	      2025-11-01
+	    </div>
+	  </div>
 
         <div class="card-center">
           <div class="complaint-title" th:text="${f.complaint.title}">

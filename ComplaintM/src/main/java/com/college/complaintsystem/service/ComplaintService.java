@@ -63,7 +63,7 @@ public class ComplaintService {
         return null;
     }
 
-    // ✅ Assign complaint by assignee name only
+    // Assign complaint by assignee name only
     public Complaint assignComplaint(Long complaintId, String assigneeName) {
         Complaint complaint = complaintRepository.findById(complaintId).orElse(null);
         if (complaint == null || assigneeName == null || assigneeName.isBlank()) {
@@ -132,7 +132,7 @@ public class ComplaintService {
         return complaintRepository.findByStatus(status);
     }
 
- // ✅ Fetch by Status and Department
+ // Fetch by Status and Department
     public List<Complaint> getComplaintsByStatusAndDept(String status, String department) {
         if (status == null || department == null) return List.of();
         String normalized = normalizeStatus(status);
@@ -152,7 +152,7 @@ public class ComplaintService {
         if (s.equals("PENDING") || s.equals("IN_PROGRESS") || s.equals("RESOLVED")) {
             return s;
         }
-        // Some frontends may pass "INPROGRESS" or "IN-PROGRESS"
+        
         if (s.contains("IN") && s.contains("PROGR")) return "IN_PROGRESS";
         if (s.contains("RESOLV")) return "RESOLVED";
         return "PENDING";
