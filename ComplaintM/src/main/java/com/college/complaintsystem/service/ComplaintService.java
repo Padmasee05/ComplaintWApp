@@ -132,6 +132,12 @@ public class ComplaintService {
         return complaintRepository.findByStatus(status);
     }
 
+ // ✅ Fetch by Status and Department
+    public List<Complaint> getComplaintsByStatusAndDept(String status, String department) {
+        if (status == null || department == null) return List.of();
+        String normalized = normalizeStatus(status);
+        return complaintRepository.findByCategoryAndStatus(department, normalized);
+    }
 
     
  //  get frequent complaints of the last week

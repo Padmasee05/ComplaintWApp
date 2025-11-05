@@ -30,6 +30,9 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
     List<Complaint> findByCategoryAndUrgentTrue(String category);
     
+    List<Complaint> findByCategoryAndStatus(String category, String status);
+
+    
  // ✅ Find most frequent complaints from the last 7 days
     @Query("SELECT c.category, COUNT(c) as count " +
     	       "FROM Complaint c " +

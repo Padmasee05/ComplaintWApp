@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Resolve Queue | Campus Assist</title>
+  <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}" />
+  <link rel="stylesheet" th:href="@{/css/resolve-queue.css}" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="brand">
+        <div class="logo">CS</div>
+        <div>
+          <div class="title">Campus Assist</div>
+          <div style="font-size:12px;color:#eaf2ff">Resolve Queue</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div th:text="${admin.name}" style="font-weight:600">Admin</div>
+        <button class="btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Top Panel -->
+    <div class="top-panel">
+      <div class="welcome">
+        <h2>Resolve Queue</h2>
+        <p>Department: <strong th:text="${admin.department}">Hostel</strong></p>
+      </div>
+      <div class="action-area">
+        <a th:href="@{/admin/dashboard(adminId=${admin.id})}" class="resolve-link">← Back to Dashboard</a>
+      </div>
+    </div>
+
+    <!-- ================= PENDING ================= -->
+    <section class="complaint-section">
+      <h3 class="section-title">🕓 Pending Complaints</h3>
+      <div class="cards">
+        <div class="card" th:each="c : ${pendingComplaints}">
+          <div class="card-left">
+            <div th:if="${!c.anonymous}">
+              <strong th:text="${c.student.name}">Student</strong><br>
+              <span th:text="${c.student.email}">student@college.com</span><br>
+              <span th:text="${c.student.rollNumber}">1234</span>
+            </div>
+            <div th:if="${c.anonymous}" style="font-style:italic;color:var(--muted)">Anonymous</div>
+          </div>
+
+          <div class="card-center">
+            <div class="complaint-title" th:text="${c.title}">Complaint title</div>
+            <div class="complaint-desc" th:text="${c.description}">Complaint description</div>
+            <div class="card-actions">
+              <div>
+                <label style="font-size:13px;color:var(--muted);">Assign to</label>
+                <select class="assign-select" th:id="'assign_' + ${c.id}">
+                  <option value="">Select</option>
+                  <option value="Ramesh Kumar">Ramesh Kumar</option>
+                  <option value="Priya Sharma">Priya Sharma</option>
+                  <option value="Rahul Verma">Rahul Verma</option>
+                  <option value="Anjali Singh">Anjali Singh</option>
+                  <option value="Maintenance Team">Maintenance Team</option>
+                  <option value="Warden Office">Warden Office</option>
+                </select>
+                <button class="small-btn" th:attr="onclick='assignTo(' + ${c.id} + ')'">Assign</button>
+              </div>
+              <div>
+                <button class="small-btn" th:attr="onclick='markInProgress(' + ${c.id} + ')'">In Progress</button>
+                <button class="small-btn success-btn" th:attr="onclick='markResolved(' + ${c.id} + ')'">Resolved</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-right">
+            <span th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}">2025-10-04</span>
+            <span th:text="${c.urgent ? 'High' : 'Normal'}" style="color:var(--warning)"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= IN PROGRESS ================= -->
+    <section class="complaint-section">
+      <h3 class="section-title">🚧 In Progress Complaints</h3>
+      <div class="cards">
+        <div class="card" th:each="c : ${inProgressComplaints}">
+          <div class="card-left">
+            <strong th:text="${c.student.name}">Student</strong>
+          </div>
+          <div class="card-center">
+            <div class="complaint-title" th:text="${c.title}">Title</div>
+            <div class="complaint-desc" th:text="${c.description}">Description</div>
+
+			<div th:if="${c.assignedTo == null or #strings.isEmpty(c.assignedTo)}">
+              <div class="card-actions">
+                <div>
+                  <label style="font-size:13px;color:var(--muted);">Assign to</label>
+                  <select class="assign-select" th:id="'assign_' + ${c.id}">
+                    <option value="">Select</option>
+                    <option value="Maintenance Team">Maintenance Team</option>
+                    <option value="Warden Office">Warden Office</option>
+                  </select>
+                  <button class="small-btn" th:attr="onclick='assignTo(' + ${c.id} + ')'">Assign</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="small-btn success-btn" th:attr="onclick='markResolved(' + ${c.id} + ')'">Resolved</button>
+            </div>
+          </div>
+
+          <div class="card-right">
+            <span th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+            <span th:text="${c.assignedTo != null ? 'Assigned to: ' + c.assignedTo : 'Unassigned'}"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= RESOLVED ================= -->
+    <section class="complaint-section">
+      <h3 class="section-title">✅ Resolved Complaints</h3>
+      <div class="cards">
+        <div class="card" th:each="c : ${resolvedComplaints}">
+          <div class="card-left">
+            <strong th:text="${c.student.name}">Student</strong>
+          </div>
+          <div class="card-center">
+            <div class="complaint-title" th:text="${c.title}">Title</div>
+            <div class="complaint-desc" th:text="${c.description}">Description</div>
+            <div style="font-size:13px;color:var(--muted);" th:if="${c.assignedTo}">
+              Assigned to: <strong th:text="${c.assignedTo}">Staff</strong>
+            </div>
+          </div>
+          <div class="card-right">
+            <span th:text="${#temporals.format(c.updatedAt, 'yyyy-MM-dd HH:mm')}">Date</span>
+            <span style="color:var(--success);font-weight:600">Resolved</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= JS ================= -->
+  <script>
+  // 🔹 Logout
+  function logout() {
+    fetch('/logout', { method: 'POST' })
+      .then(() => window.location = '/login')
+      .catch(() => window.location = '/login');
+  }
+
+  // 🔹 Assign Complaint
+  function assignTo(id) {
+    const sel = document.getElementById('assign_' + id);
+    const name = sel ? sel.value : null;
+    if (!name) {
+      alert('Please select a person to assign.');
+      return;
+    }
+
+    fetch(`/complaints/${id}/assign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ assigneeName: name })
+    })
+    .then(async res => {
+      const text = await res.text();
+      let body;
+      try { body = JSON.parse(text); } catch (e) { body = text; }
+      if (res.ok) {
+        alert((body && body.message) ? body.message : 'Assigned successfully');
+        location.reload();
+      } else {
+        alert('Assignment failed: ' + (body && body.message ? body.message : res.status));
+      }
+    })
+    .catch(err => {
+      console.error('Assign error:', err);
+      alert('Network error while assigning.');
+    });
+  }
+
+  // 🔹 Mark In Progress
+  function markInProgress(id) {
+    updateStatus(id, 'IN_PROGRESS');
+  }
+
+  // 🔹 Mark Resolved
+  function markResolved(id) {
+    updateStatus(id, 'RESOLVED');
+  }
+
+  // 🔹 Helper to update complaint status
+  function updateStatus(id, status) {
+    fetch(`/complaints/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    })
+    .then(async res => {
+      const text = await res.text();
+      let body;
+      try { body = JSON.parse(text); } catch (e) { body = text; }
+      if (res.ok) {
+        alert((body && body.message) ? body.message : 'Status updated successfully');
+        location.reload();
+      } else {
+        alert('Failed to update: ' + (body && body.message ? body.message : res.status));
+      }
+    })
+    .catch(err => {
+      console.error('Status update error:', err);
+      alert('Network error while updating status.');
+    });
+  }
+  </script>
+</body>
+</html>

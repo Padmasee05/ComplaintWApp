@@ -46,11 +46,22 @@ public class AdminViewController {
     }
 
     // Navigation to resolve queue page
+    // ✅ Resolve Queue Page
     @GetMapping("/resolve-queue")
-    public String resolveQueue(@RequestParam Long adminId, Model model) {
+    public String viewResolveQueue(@RequestParam Long adminId, Model model) {
         Admin admin = adminService.getAdminById(adminId);
+        if (admin == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("admin", admin);
-        model.addAttribute("complaints", complaintService.getComplaintsByDepartment(admin.getDepartment()));
-        return "resolve-queue"; // create resolve-queue.html
+        String department = admin.getDepartment();
+
+        model.addAttribute("pendingComplaints", complaintService.getComplaintsByStatusAndDept("PENDING", department));
+        model.addAttribute("inProgressComplaints", complaintService.getComplaintsByStatusAndDept("IN_PROGRESS", department));
+        model.addAttribute("resolvedComplaints", complaintService.getComplaintsByStatusAndDept("RESOLVED", department));
+
+        return "resolve-queue"; // templates/admin/resolve-queue.html
+    
     }
 }
