@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import com.college.complaintsystem.model.Student;
 import com.college.complaintsystem.repository.StudentRepository;
 import com.college.complaintsystem.service.StudentService;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 @Controller
 public class ViewController {
@@ -24,10 +27,27 @@ public class ViewController {
 	    }
 	 
 	 @PostMapping("/register")
-	    public String processRegisterForm(@ModelAttribute("student") Student student) {
-		 	studentService.saveStudent(student);
-	        return "redirect:/login"; 
-	    }
+	 public String processRegisterForm(
+	         @Valid @ModelAttribute("student") Student student,
+	         BindingResult result,
+	         Model model) {
+
+	     // If there are validation errors → stay on the form
+	     if (result.hasErrors()) {
+	         model.addAttribute("errorMessage", "Please fix the errors below.");
+	         return "register"; // shows register.html with error messages
+	     }
+
+	     try {
+	         studentService.saveStudent(student);
+	     } catch (IllegalArgumentException e) {
+	         model.addAttribute("errorMessage", e.getMessage());
+	         return "register";
+	     }
+	     return "redirect:/login";
+	 }
+
+
 
     @GetMapping("/login")
     public String showLoginPage() {

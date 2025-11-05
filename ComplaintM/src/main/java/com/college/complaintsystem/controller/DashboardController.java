@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Controller
 public class DashboardController {
@@ -35,7 +36,9 @@ public class DashboardController {
     
     @Autowired
     private StudentService studentService;
-
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/dashboard")
     public String showDashboard(HttpSession session, HttpServletRequest request, Model model) {
@@ -251,21 +254,30 @@ public class DashboardController {
     ) {
         Map<String, String> response = new HashMap<>();
         Student student = (Student) session.getAttribute("loggedInStudent");
+
         if (student == null) {
             response.put("status", "error");
             response.put("message", "Session expired. Please log in again.");
             return response;
         }
 
-        // Check current password
-        if (!student.getPassword().equals(currentPassword)) {
+        // ✅ Verify old password
+        if (!passwordEncoder.matches(currentPassword, student.getPassword())) {
             response.put("status", "error");
             response.put("message", "Current password is incorrect!");
             return response;
         }
 
-        // Update password
-        student.setPassword(newPassword);
+        // ✅ Validate new password strength before saving
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        if (!newPassword.matches(passwordRegex)) {
+            response.put("status", "error");
+            response.put("message", "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+            return response;
+        }
+
+        // ✅ Encrypt and save new password
+        student.setPassword(passwordEncoder.encode(newPassword));
         studentService.saveStudent(student);
         session.setAttribute("loggedInStudent", student);
 

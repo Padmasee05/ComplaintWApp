@@ -29,16 +29,30 @@
           <p><strong>Phone:</strong> <span th:text="${student.phoneNumber}">+91 9876543210</span></p>
 
           <button class="btn-primary" id="changePasswordBtn">Change Password</button>
-
-          <div id="passwordSection" class="hidden">
+<div id="passwordSection" class="hidden">
             <div class="form-group">
               <label>Current Password</label>
-              <input type="password" id="currentPassword" placeholder="Enter current password">
+              <div class="password-wrapper">
+                <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                <button type="button" class="toggle-password" onclick="togglePassword('currentPassword', this)">👁️</button>
+              </div>
             </div>
+
             <div class="form-group">
               <label>New Password</label>
-              <input type="password" id="newPassword" placeholder="Enter new password">
+              <div class="password-wrapper">
+                <input type="password" id="newPassword" 
+                       placeholder="Enter new password"
+                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
+                       title="Must be 8+ chars, include uppercase, lowercase, number & special char"
+                       required>
+                <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">👁️</button>
+              </div>
+              <p id="passwordError" class="error-message hidden">
+                Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.
+              </p>
             </div>
+
             <br>
             <button class="btn-secondary" id="confirmChangeBtn">Change</button>
           </div>
@@ -53,41 +67,66 @@
   </div>
 
   <script>
-document.getElementById('changePasswordBtn').addEventListener('click', function() {
-  document.getElementById('passwordSection').classList.toggle('hidden');
-});
+  // 🔹 Toggle visibility of password section
+  document.getElementById('changePasswordBtn').addEventListener('click', function() {
+    document.getElementById('passwordSection').classList.toggle('hidden');
+  });
 
-document.getElementById('confirmChangeBtn').addEventListener('click', function() {
-  const currentPassword = document.getElementById('currentPassword').value.trim();
-  const newPassword = document.getElementById('newPassword').value.trim();
-
-  if (!currentPassword || !newPassword) {
-    alert("Please fill out both fields!");
-    return;
+  // 🔹 Show/hide password visibility
+  function togglePassword(fieldId, button) {
+    const field = document.getElementById(fieldId);
+    if (field.type === "password") {
+      field.type = "text";
+      button.textContent = "🙈";
+    } else {
+      field.type = "password";
+      button.textContent = "👁️";
+    }
   }
 
-  fetch('/change-password', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `currentPassword=${encodeURIComponent(currentPassword)}&newPassword=${encodeURIComponent(newPassword)}`
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.status === "success") {
-      alert(data.message);
-      document.getElementById('passwordSection').classList.add('hidden');
-      document.getElementById('currentPassword').value = "";
-      document.getElementById('newPassword').value = "";
-    } else {
-      alert(data.message);
+  // 🔹 Password validation check before submission
+  document.getElementById('confirmChangeBtn').addEventListener('click', function() {
+    const currentPassword = document.getElementById('currentPassword').value.trim();
+    const newPassword = document.getElementById('newPassword').value.trim();
+    const passwordError = document.getElementById('passwordError');
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+    passwordError.classList.add('hidden'); // reset
+
+    if (!currentPassword || !newPassword) {
+      alert("Please fill out both fields!");
+      return;
     }
-  })
-  .catch(err => {
-    console.error("Error changing password:", err);
-    alert("Something went wrong. Try again.");
+
+    if (!passwordRegex.test(newPassword)) {
+      passwordError.classList.remove('hidden');
+      return;
+    }
+
+    // ✅ This part was missing a closing brace before
+    fetch('/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `currentPassword=${encodeURIComponent(currentPassword)}&newPassword=${encodeURIComponent(newPassword)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "success") {
+        alert(data.message);
+        document.getElementById('passwordSection').classList.add('hidden');
+        document.getElementById('currentPassword').value = "";
+        document.getElementById('newPassword').value = "";
+      } else {
+        alert(data.message);
+      }
+    })
+    .catch(err => {
+      console.error("Error changing password:", err);
+      alert("Something went wrong. Try again.");
+    });
   });
-});
 </script>
+
 
 
 </body>

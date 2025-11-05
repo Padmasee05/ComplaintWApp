@@ -18,7 +18,29 @@ public class StudentService {
 
 
     public Student saveStudent(Student student) {
-    	student.setPassword(passwordEncoder.encode(student.getPassword()));
+    	
+    	 Student existingStudent = studentRepository.findByEmail(student.getEmail());
+    	    if (existingStudent != null && !existingStudent.getId().equals(student.getId())) {
+    	        throw new IllegalArgumentException("Email already registered. Please use another email.");
+    	    }
+        
+        // – Validate password format 
+        String password = student.getPassword();
+        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$";
+
+        if (!password.matches(pattern)) {
+            throw new IllegalArgumentException(
+                "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
+            );
+        }
+       
+
+        // – Encode password only if not already encoded
+        if (!password.startsWith("$2a$")) {
+            student.setPassword(passwordEncoder.encode(password));
+        }
+
+        //  – Save to DB
         return studentRepository.save(student);
     }
 
