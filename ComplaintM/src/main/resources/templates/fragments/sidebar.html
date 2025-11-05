@@ -25,6 +25,12 @@
 		       👤 Profile
 		    </a>
 		  </li>
+			<li>
+			  <a th:href="@{/feedback}"
+			     th:classappend="${currentPath != null and currentPath.startsWith('/feedback')} ? 'active' : ''">
+			     💬 Feedback
+			  </a>
+			</li>
 		
 		  <li>
 		    <a th:href="@{/dashboard}"

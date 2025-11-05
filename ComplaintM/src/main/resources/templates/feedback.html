@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Feedback | CampusAssist</title>
+  <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+  <link rel="stylesheet" href="/css/feedback.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <!-- Header + Sidebar -->
+  <div th:replace="fragments/header :: header"></div>
+
+  <div class="main-container">
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <main class="content">
+      <h2>Feedback on Resolved Complaints</h2>
+
+      <div th:if="${#lists.isEmpty(resolvedComplaints)}" class="no-feedback">
+        No resolved complaints available for feedback.
+      </div>
+
+      <div class="feedback-grid">
+        <div th:each="c : ${resolvedComplaints}" class="feedback-card">
+          <h3 th:text="${c.title}">Complaint Title</h3>
+          <p><strong>Category:</strong> <span th:text="${c.category}"></span></p>
+          <p><strong>Resolved On:</strong> 
+             <span th:text="${#temporals.format(c.updatedAt, 'dd MMM yyyy HH:mm')}"></span>
+          </p>
+
+          <form class="feedback-form">
+            <input type="hidden" name="complaintId" th:value="${c.id}" />
+
+            <label>Rate this resolution:</label>
+            <div class="rating">
+              <label><input type="radio" name="rating" value="5" required> ⭐⭐⭐⭐⭐</label><br>
+              <label><input type="radio" name="rating" value="4"> ⭐⭐⭐⭐</label><br>
+              <label><input type="radio" name="rating" value="3"> ⭐⭐⭐</label><br>
+              <label><input type="radio" name="rating" value="2"> ⭐⭐</label><br>
+              <label><input type="radio" name="rating" value="1"> ⭐</label><br>
+            </div>
+
+            <textarea name="comment" placeholder="Write your feedback (optional)"></textarea>
+            <button type="submit" class="submit-btn">Submit Feedback</button>
+          </form>
+        </div>
+      </div>
+    
+  
+   <!-- 🧾 Feedback History -->
+      <section class="feedback-history">
+        <h2>My Feedback History</h2>
+
+        <div th:if="${#lists.isEmpty(feedbackHistory)}" class="no-feedback">
+          You haven't submitted any feedback yet.
+        </div>
+
+        <div class="feedback-history-grid">
+          <div th:each="f : ${feedbackHistory}" class="feedback-history-card">
+            <h3 th:text="${f.complaint.title}">Complaint Title</h3>
+            <p><strong>Category:</strong> <span th:text="${f.complaint.category}"></span></p>
+            <p><strong>Rating:</strong> 
+              <span th:utext="${'⭐'.repeat(f.rating)}"></span> 
+              (<span th:text="${f.rating}"></span>/5)
+            </p>
+            <p th:if="${f.comment}"><strong>Comment:</strong> <span th:text="${f.comment}"></span></p>
+            <p><em th:text="${#temporals.format(f.createdAt, 'dd MMM yyyy HH:mm')}"></em></p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+
+  <!-- ✅ AJAX Script -->
+  <script>
+    document.querySelectorAll(".feedback-form").forEach(form => {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        if (!data.rating) {
+          Swal.fire("Please select a rating", "", "warning");
+          return;
+        }
+
+        try {
+          const res = await fetch("/feedback/submit", {
+            method: "POST",
+            body: formData
+          });
+          const result = await res.json();
+
+          if (result.status === "success") {
+            Swal.fire({
+              icon: "success",
+              title: "Thank you!",
+              text: result.message,
+              timer: 2000,
+              showConfirmButton: false
+            });
+
+            // ✅ Fade out card after success
+            form.closest(".feedback-card").style.transition = "opacity 0.5s ease";
+            form.closest(".feedback-card").style.opacity = 0;
+            setTimeout(() => form.closest(".feedback-card").remove(), 600);
+
+          } else {
+            Swal.fire("Error", result.message || "Something went wrong", "error");
+          }
+        } catch (err) {
+          Swal.fire("Error", "Failed to submit feedback", "error");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

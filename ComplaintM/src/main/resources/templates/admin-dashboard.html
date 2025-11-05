@@ -31,6 +31,9 @@
         <p>Department: <strong th:text="${admin.department}">Hostel</strong></p>
       </div>
       <div class="action-area">
+      <a th:href="@{/admin/feedbacks}" class="resolve-link" style="margin-right:10px;background:var(--primary-dark)">
+    See Feedbacks
+  </a>
 		<a th:href="@{/admin/resolve-queue(adminId=${admin.id})}" class="resolve-link">Go to Resolve Screen</a>      </div>
     </div>
 

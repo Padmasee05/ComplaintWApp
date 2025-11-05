@@ -40,7 +40,7 @@ public class Student {
 
     //  Hostel: must contain 'Block' or 'NA'
     @NotBlank(message = "Hostel information is required")
-    @Pattern(regexp = "^(?i)(.*block.*|NA)$", message = "Hostel must contain 'Block' or be 'NA'")
+    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "Hostel can only contain letters and numbers")
     private String hostel;
 
     //  Password: 8+ chars, uppercase, lowercase, digit, special char

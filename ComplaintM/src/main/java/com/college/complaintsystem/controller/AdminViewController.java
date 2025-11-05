@@ -5,9 +5,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.college.complaintsystem.model.Complaint;
+import com.college.complaintsystem.model.Feedback;
 import com.college.complaintsystem.model.Admin;
 import com.college.complaintsystem.service.AdminService;
 import com.college.complaintsystem.service.ComplaintService;
+import com.college.complaintsystem.service.FeedbackService;
+
 import java.util.List;
 import java.util.Map;
 import jakarta.servlet.http.HttpSession;
@@ -22,7 +25,11 @@ public class AdminViewController {
     @Autowired
     private ComplaintService complaintService;
 
- // ✅ Show login page
+    @Autowired
+    private FeedbackService feedbackService;
+
+    
+ // Show login page
     @GetMapping("/login")
     public String showLoginPage() {
         return "admin-login";
@@ -91,6 +98,25 @@ public class AdminViewController {
         model.addAttribute("resolvedComplaints", complaintService.getComplaintsByStatusAndDept("RESOLVED", department));
 
         return "resolve-queue";
+    }
+
+    @GetMapping("/feedbacks")
+    public String viewFeedbacks(HttpSession session, Model model) {
+        Admin admin = (Admin) session.getAttribute("admin");
+        String role = (String) session.getAttribute("role");
+
+        if (admin == null || !"ADMIN".equals(role)) {
+            return "redirect:/admin/login";
+        }
+
+        String department = admin.getDepartment();
+
+        // Fetch feedbacks whose complaint belongs to this department
+        List<Feedback> feedbackList = feedbackService.getFeedbacksByDepartment(department);
+
+        model.addAttribute("admin", admin);
+        model.addAttribute("feedbacks", feedbackList);
+        return "admin-feedbacks";
     }
 
     
