@@ -104,11 +104,12 @@
               showConfirmButton: false
             });
 
-            // ✅ Fade out card after success
+            // Fade out card after success
             form.closest(".feedback-card").style.transition = "opacity 0.5s ease";
             form.closest(".feedback-card").style.opacity = 0;
-            setTimeout(() => form.closest(".feedback-card").remove(), 600);
-
+            setTimeout(() => {
+                window.location.reload();
+              }, 1600);
           } else {
             Swal.fire("Error", result.message || "Something went wrong", "error");
           }
