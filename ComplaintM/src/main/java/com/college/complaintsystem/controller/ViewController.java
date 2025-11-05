@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import com.college.complaintsystem.model.Student;
 import com.college.complaintsystem.repository.StudentRepository;
+import com.college.complaintsystem.service.StudentService;
 
 @Controller
 public class ViewController {
-	 @Autowired
-	    private StudentRepository studentRepository;
+	  @Autowired
+	    private StudentService studentService;
+	  
 
 	 @GetMapping("/register")
 	    public String showRegisterPage(Model model) {
@@ -23,13 +25,13 @@ public class ViewController {
 	 
 	 @PostMapping("/register")
 	    public String processRegisterForm(@ModelAttribute("student") Student student) {
-	        studentRepository.save(student);
+		 	studentService.saveStudent(student);
 	        return "redirect:/login"; 
 	    }
 
     @GetMapping("/login")
     public String showLoginPage() {
-        return "login"; // We'll create login.html next
+        return "login"; 
     }
     
     @GetMapping("/logout")
@@ -38,30 +40,5 @@ public class ViewController {
         return "redirect:/login"; // ✅ Redirects back to login page
     }
 
-    
-   /* @GetMapping("/dashboard")
-    public String showDashboard(Model model) {
-        // sample placeholders — replace with real service calls later
-        model.addAttribute("student", new Student()); // or fetch logged-in student
-        model.addAttribute("totalComplaints", 0);
-        model.addAttribute("urgentComplaints", 0);
-        model.addAttribute("resolvedComplaints", 0);
-        model.addAttribute("myComplaints", new java.util.ArrayList<>());
-        model.addAttribute("recentActivity", new java.util.ArrayList<>());
-        model.addAttribute("frequentComplaints", new java.util.ArrayList<>()); // List<Object[]> later
-        return "dashboard";
-    }
-    
-    @GetMapping("/dashboard")
-    public String showDashboard(HttpSession session, Model model) {
-        Student loggedInStudent = (Student) session.getAttribute("loggedInStudent");
-
-        if (loggedInStudent == null) {
-            return "redirect:/login"; // not logged in
-        }
-
-        model.addAttribute("student", loggedInStudent);
-        return "dashboard"; //  dashboard.html
-    }*/
 
 }

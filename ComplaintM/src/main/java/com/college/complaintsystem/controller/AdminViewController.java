@@ -10,6 +10,7 @@ import com.college.complaintsystem.service.AdminService;
 import com.college.complaintsystem.service.ComplaintService;
 import java.util.List;
 import java.util.Map;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/admin")
@@ -21,37 +22,65 @@ public class AdminViewController {
     @Autowired
     private ComplaintService complaintService;
 
-    // Dashboard page
-    @GetMapping("/dashboard")
-    public String adminDashboard(@RequestParam(required = false) Long adminId, Model model) {
-        Admin admin = adminService.getAdminById(adminId);
+ // ✅ Show login page
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "admin-login";
+    }
+
+    // Handle login POST
+    @PostMapping("/login")
+    public String handleLogin(@RequestParam String email,
+                              @RequestParam String password,
+                              Model model,
+                              HttpSession session) {
+        Admin admin = adminService.login(email, password);
 
         if (admin == null) {
-            return "redirect:/login"; // or show error page
+            model.addAttribute("error", "Invalid email or password");
+            return "admin-login";
+        }
+
+        // ✅ Save admin in session
+        session.setAttribute("admin", admin);
+        session.setAttribute("role", "ADMIN"); // ✅ add role-based flag
+
+        return "redirect:/admin/dashboard";
+    }
+
+    
+    // Dashboard page
+    @GetMapping("/dashboard")
+    public String adminDashboard(HttpSession session, Model model) {
+        Admin admin = (Admin) session.getAttribute("admin");
+        String role = (String) session.getAttribute("role");
+
+        if (admin == null || !"ADMIN".equals(role)) {
+            return "redirect:/admin/login";
         }
 
         model.addAttribute("admin", admin);
         String department = admin.getDepartment();
-     // ✅ Stats
+
         Map<String, Long> stats = complaintService.getComplaintStatsByDepartment(department);
         model.addAttribute("stats", stats);
 
-        // ✅ Urgent + Pending only
         List<Complaint> urgentComplaints = complaintService.findUrgentPendingComplaints(department);
         model.addAttribute("urgentComplaints", urgentComplaints);
 
-        // ✅ Names list for assignment dropdown
         model.addAttribute("adminsList", adminService.getAllAdmins());
-        return "admin-dashboard"; // maps to templates/admin-dashboard.html
+        return "admin-dashboard";
     }
 
-    // Navigation to resolve queue page
-    // ✅ Resolve Queue Page
+
+    //  Resolve Queue Page
     @GetMapping("/resolve-queue")
-    public String viewResolveQueue(@RequestParam Long adminId, Model model) {
-        Admin admin = adminService.getAdminById(adminId);
-        if (admin == null) {
-            return "redirect:/login";
+    public String viewResolveQueue(HttpSession session, Model model) {
+        Admin admin = (Admin) session.getAttribute("admin");
+        String role = (String) session.getAttribute("role");
+
+        if (admin == null || !"ADMIN".equals(role)) {
+            return "redirect:/admin/login";
         }
 
         model.addAttribute("admin", admin);
@@ -61,7 +90,14 @@ public class AdminViewController {
         model.addAttribute("inProgressComplaints", complaintService.getComplaintsByStatusAndDept("IN_PROGRESS", department));
         model.addAttribute("resolvedComplaints", complaintService.getComplaintsByStatusAndDept("RESOLVED", department));
 
-        return "resolve-queue"; // templates/admin/resolve-queue.html
+        return "resolve-queue";
+    }
+
     
+    // Logout Route
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); //  Clears session
+        return "redirect:/admin/login?logout=true";
     }
 }

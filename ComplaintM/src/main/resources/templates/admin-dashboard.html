@@ -20,7 +20,7 @@
       </div>
       <div class="header-right">
         <div th:text="${admin.name}" style="font-weight:600">Admin</div>
-        <button class="btn" onclick="logout()">Logout</button>
+			<button class="btn" onclick="window.location.href='/admin/logout'">Logout</button>
       </div>
     </div>
 
@@ -163,19 +163,7 @@
   </div>
 
   <script>
-  // Logout (keeps same behaviour)
-  function logout() {
-    fetch('/logout', { method: 'POST' })
-      .then(res => {
-        // if server redirects, follow; otherwise go to login
-        window.location = '/login';
-      })
-      .catch(err => {
-        console.error('Logout error:', err);
-        window.location = '/login';
-      });
-  }
-
+  
   // Assign complaint to admin
   function assignTo(id) {
   const sel = document.getElementById('assign_' + id);

@@ -21,7 +21,7 @@
       </div>
       <div class="header-right">
         <div th:text="${admin.name}" style="font-weight:600">Admin</div>
-        <button class="btn" onclick="logout()">Logout</button>
+		<button class="btn" onclick="window.location.href='/admin/logout'">Logout</button>
       </div>
     </div>
 
@@ -147,12 +147,6 @@
 
   <!-- ================= JS ================= -->
   <script>
-  // 🔹 Logout
-  function logout() {
-    fetch('/logout', { method: 'POST' })
-      .then(() => window.location = '/login')
-      .catch(() => window.location = '/login');
-  }
 
   // 🔹 Assign Complaint
   function assignTo(id) {

@@ -33,6 +33,7 @@ public class StudentController {
 
         if (student != null) {
             session.setAttribute("loggedInStudent", student);
+            session.setAttribute("role", "STUDENT");
             return "redirect:/dashboard";
         } else {
             model.addAttribute("error", "Invalid email or password!");
